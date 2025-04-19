@@ -1,2 +1,2 @@
 # plant-tracker
-Plant tracker app
+Plant tracker
