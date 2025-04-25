@@ -12,21 +12,23 @@ import SettingsScreen from './screens/SettingsScreen';
 import './App.css';
 
 function App() {
-    return (
-      <AuthProvider>
-        <PlantProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/plant/:id" element={<PlantDetailScreen />} />
-              <Route path="/add-plant" element={<AddPlantScreen />} />
-              <Route path="/care-log/:id" element={<CareLogScreen />} />
-              <Route path="/gallery/:id" element={<GalleryScreen />} />
-              <Route path="/calendar" element={<CalendarScreen />} />
-              <Route path="/settings" element={<SettingsScreen />} />
-            </Routes>
-          </Router>
-        </PlantProvider>
-      </AuthProvider>
-    );
+  return (
+    <AuthProvider>
+      <PlantProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/plant/:id" element={<PlantDetailScreen />} />
+            <Route path="/add-plant" element={<AddPlantScreen />} />
+            <Route path="/care-log/:id" element={<CareLogScreen />} />
+            <Route path="/gallery/:id" element={<GalleryScreen />} />
+            <Route path="/calendar" element={<CalendarScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+          </Routes>
+        </Router>
+      </PlantProvider>
+    </AuthProvider>
+  );
 }
+
+export default App;
