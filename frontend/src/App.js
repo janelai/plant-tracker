@@ -10,25 +10,53 @@ import GalleryScreen from './screens/GalleryScreen';
 import CalendarScreen from './screens/CalendarScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import PlantList from './components/PlantList';
+import PlaceholderScreen from './screens/PlaceholderScreen';
 import './App';
 
 function App() {
   return (
-    <AuthProvider>
-      <PlantProvider>
-        <Router>
+    <PlantProvider>
+      <Router>
+        <div className="App">
           <Routes>
             <Route path="/" element={<HomeScreen />} />
-            <Route path="/plant/:id" element={<PlantDetailScreen />} />
-            <Route path="/add-plant" element={<AddPlantScreen />} />
-            <Route path="/care-log/:id" element={<CareLogScreen />} />
-            <Route path="/gallery/:id" element={<GalleryScreen />} />
-            <Route path="/calendar" element={<CalendarScreen />} />
-            <Route path="/settings" element={<SettingsScreen />} />
           </Routes>
-        </Router>
-      </PlantProvider>
-    </AuthProvider>
+        </div>
+      </Router>
+    </PlantProvider>
+    // <Router>
+    //   <div className="App">
+    //     <Routes>
+    //       <Route path="/" element={<HomeScreen />} />
+    //     </Routes>
+    //   </div>
+    //   <div className="App">
+    //     <Routes>
+    //       <Route path="/" element={<HomeScreen />} />
+    //       <Route path="/plant/:id" element={<PlaceholderScreen title="Plant Details" />} />
+    //       <Route path="/add-plant" element={<PlaceholderScreen title="Add Plant" />} />
+    //       <Route path="/care-log/:id" element={<PlaceholderScreen title="Care Log" />} />
+    //       <Route path="/gallery/:id" element={<PlaceholderScreen title="Gallery" />} />
+    //       <Route path="/calendar" element={<PlaceholderScreen title="Calendar" />} />
+    //       <Route path="/settings" element={<PlaceholderScreen title="Settings" />} />
+    //     </Routes>
+    //   </div>
+    // </Router>
+    // <AuthProvider>
+    //   <PlantProvider>
+    //     <Router>
+    //       <Routes>
+    //         <Route path="/" element={<HomeScreen />} />
+    //         <Route path="/plant/:id" element={<PlantDetailScreen />} />
+    //         <Route path="/add-plant" element={<AddPlantScreen />} />
+    //         <Route path="/care-log/:id" element={<CareLogScreen />} />
+    //         <Route path="/gallery/:id" element={<GalleryScreen />} />
+    //         <Route path="/calendar" element={<CalendarScreen />} />
+    //         <Route path="/settings" element={<SettingsScreen />} />
+    //       </Routes>
+    //     </Router>
+    //   </PlantProvider>
+    // </AuthProvider>
     // <div className="App">
     //   <header className="App-header">
     //     <h1>Plant Care App</h1>

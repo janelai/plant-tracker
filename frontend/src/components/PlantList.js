@@ -1,44 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import api from '../services/api';
+import { PlantContext } from '../contexts/PlantContext';
 
 function PlantList() {
-  const [plants, setPlants] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { plants, loading, error } = useContext(PlantContext);
 
-  useEffect(() => {
-    const fetchPlants = async () => {
-      try {
-        const response = await api.get('/plants');
-        setPlants(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Error fetching plants');
-        setLoading(false);
-        console.error(err);
-      }
-    };
-
-    fetchPlants();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <p>Loading plants...</p>;
+  if (error) return <p className="error">Error: {error}</p>;
 
   return (
     <div>
       <h2>My Plants</h2>
+      
       {plants.length === 0 ? (
-        <p>No plants yet. Add your first plant!</p>
+        <p>No plants found. Add your first plant!</p>
       ) : (
-        <ul>
-          {plants.map(plant => (
-            <li key={plant.id || plant._id}>
-              {plant.name} - {plant.species || 'Unknown species'}
+        <ul className="plant-list">
+          {plants.map((plant, index) => (
+            <li key={plant.id || plant._id || index}>
+              {plant.name || 'Unnamed plant'} 
+              {plant.species && ` - ${plant.species}`}
             </li>
           ))}
         </ul>
       )}
+      
+      <button className="add-button">Add New Plant</button>
     </div>
   );
 }
