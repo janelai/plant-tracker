@@ -39,34 +39,25 @@
 // });
 
 const express = require('express');
-const app = express();
 const cors = require('cors');
-const path = require('path');
+const { connectDB } = require('./config/db');
+
+// Initialize express
+const app = express();
+
+// Connect to database
+console.log('Connecting to MongoDB...');
+connectDB()
+  .then(() => console.log('MongoDB connection successful'))
+  .catch(err => console.error('MongoDB connection failed:', err));
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-// Static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Simple test route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API is working' });
-});
-
-// Import routes
+// Routes
 const plantRoutes = require('./routes/plantRoutes');
-
-// Use routes - make sure plantRoutes is a router, not an object
 app.use('/api/plants', plantRoutes);
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Server error' });
-});
 
 // Start server
 const PORT = process.env.PORT || 5000;

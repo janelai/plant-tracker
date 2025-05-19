@@ -28,6 +28,23 @@ export function PlantProvider({ children }) {
     }
   };
 
+  const removePlant = async (id) => {
+    try {
+      setLoading(true);
+      await api.delete(`/plants/${id}`);
+      
+      // Update state by filtering out the deleted plant
+      setPlants(plants.filter(plant => plant._id !== id));
+      return true;
+    } catch (err) {
+      console.error('Error removing plant:', err);
+      setError('Failed to delete plant');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchPlants();
   }, []);
@@ -37,6 +54,7 @@ export function PlantProvider({ children }) {
     loading,
     error,
     fetchPlants,
+    removePlant
   };
 
   return (

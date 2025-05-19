@@ -20,6 +20,8 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<HomeScreen />} />
+            <Route path="/add-plant" element={<AddPlantScreen />} />
+            <Route path="/plant/:id" element={<PlantDetailScreen />} />
           </Routes>
         </div>
       </Router>

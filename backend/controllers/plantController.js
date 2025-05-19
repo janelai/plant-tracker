@@ -1,190 +1,101 @@
 const Plant = require('../models/Plant');
-const CareLog = require('../models/CareLog');
 const asyncHandler = require('express-async-handler');
 
-// @desc    Get all plants for a user
+// @desc    Get all plants
 // @route   GET /api/plants
-// @access  Private
+// @access  Public (or Private if using auth)
 const getPlants = asyncHandler(async (req, res) => {
-  const plants = await Plant.find({ user: req.user.id }).sort({ dateAdded: -1 });
-  res.json(plants);
-});
-
-// @desc    Get a single plant
-// @route   GET /api/plants/:id
-// @access  Private
-const getPlantById = asyncHandler(async (req, res) => {
-  const plant = await Plant.findById(req.params.id);
-  
-  if (!plant) {
-    res.status(404);
-    throw new Error('Plant not found');
+  try {
+    // If using auth, you'd filter by user: const plants = await Plant.find({ user: req.user.id });
+    const plants = await Plant.find({});
+    res.json(plants);
+  } catch (error) {
+    console.error('Error fetching plants:', error);
+    res.status(500).json({ message: 'Server error' });
   }
-  
-  // Check if the plant belongs to the user
-  if (plant.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error('Not authorized');
-  }
-  
-  res.json(plant);
 });
 
 // @desc    Create a new plant
 // @route   POST /api/plants
-// @access  Private
+// @access  Public (or Private if using auth)
 const createPlant = asyncHandler(async (req, res) => {
-  const { name, species, description, wateringFrequency } = req.body;
+  console.log('Received plant creation request:', req.body);
   
-  if (!name) {
-    res.status(400);
-    throw new Error('Name is required');
+  try {
+    // Validate required fields
+    if (!req.body.name) {
+      console.log('Validation failed: No plant name provided');
+      return res.status(400).json({ message: 'Plant name is required' });
+    }
+    
+    // Create plant
+    const plant = await Plant.create({
+      // If using auth: user: req.user.id,
+      name: req.body.name,
+      species: req.body.species || '',
+      wateringFrequency: req.body.wateringFrequency || 7,
+    });
+    
+    console.log('Plant created successfully:', plant);
+    res.status(201).json(plant);
+  } catch (error) {
+    console.error('Error creating plant:', error);
+    res.status(500).json({ message: 'Server error while creating plant', error: error.message });
   }
-  
-  // Handle image upload
-  let imageUrl = null;
-  if (req.file) {
-    imageUrl = `/uploads/${req.file.filename}`;
-  }
-  
-  const plant = await Plant.create({
-    user: req.user.id,
-    name,
-    species,
-    description,
-    imageUrl,
-    wateringFrequency: wateringFrequency || 7, // Default to 7 days
-  });
-  
-  res.status(201).json(plant);
 });
 
-// @desc    Update a plant
-// @route   PUT /api/plants/:id
-// @access  Private
-const updatePlant = asyncHandler(async (req, res) => {
-  const plant = await Plant.findById(req.params.id);
-  
-  if (!plant) {
-    res.status(404);
-    throw new Error('Plant not found');
+// @desc    Get a single plant by ID
+// @route   GET /api/plants/:id
+// @access  Public (or Private if using auth)
+const getPlantById = asyncHandler(async (req, res) => {
+  try {
+    const plant = await Plant.findById(req.params.id);
+    
+    if (!plant) {
+      return res.status(404).json({ message: 'Plant not found' });
+    }
+    
+    // If using auth: Check if plant belongs to user
+    // if (plant.user.toString() !== req.user.id) {
+    //   return res.status(401).json({ message: 'Not authorized' });
+    // }
+    
+    res.json(plant);
+  } catch (error) {
+    console.error('Error fetching plant:', error);
+    res.status(500).json({ message: 'Server error' });
   }
-  
-  // Check if the plant belongs to the user
-  if (plant.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error('Not authorized');
-  }
-  
-  // Update fields
-  const { name, species, description, wateringFrequency } = req.body;
-  
-  if (name) plant.name = name;
-  if (species) plant.species = species;
-  if (description) plant.description = description;
-  if (wateringFrequency) plant.wateringFrequency = wateringFrequency;
-  
-  // Handle image upload
-  if (req.file) {
-    plant.imageUrl = `/uploads/${req.file.filename}`;
-  }
-  
-  const updatedPlant = await plant.save();
-  res.json(updatedPlant);
 });
 
-// @desc    Delete a plant
-// @route   DELETE /api/plants/:id
-// @access  Private
 const deletePlant = asyncHandler(async (req, res) => {
-  const plant = await Plant.findById(req.params.id);
-  
-  if (!plant) {
-    res.status(404);
-    throw new Error('Plant not found');
+  try {
+    const plant = await Plant.findById(req.params.id);
+    
+    if (!plant) {
+      return res.status(404).json({ message: 'Plant not found' });
+    }
+    
+    // If you have authentication, check if plant belongs to user
+    // if (plant.user && plant.user.toString() !== req.user.id) {
+    //   return res.status(401).json({ message: 'Not authorized' });
+    // }
+    
+    await plant.deleteOne(); // or plant.remove() in older versions
+    
+    console.log(`Plant deleted: ${req.params.id}`);
+    res.json({ message: 'Plant removed', id: req.params.id });
+  } catch (error) {
+    console.error('Error deleting plant:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
-  
-  // Check if the plant belongs to the user
-  if (plant.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error('Not authorized');
-  }
-  
-  // Delete all care logs associated with this plant
-  await CareLog.deleteMany({ plant: req.params.id });
-  
-  // Delete the plant
-  await plant.remove();
-  
-  res.json({ message: 'Plant removed' });
-});
-
-// @desc    Log a care activity for a plant
-// @route   POST /api/plants/:id/care-log
-// @access  Private
-const logCareActivity = asyncHandler(async (req, res) => {
-  const plant = await Plant.findById(req.params.id);
-  
-  if (!plant) {
-    res.status(404);
-    throw new Error('Plant not found');
-  }
-  
-  // Check if the plant belongs to the user
-  if (plant.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error('Not authorized');
-  }
-  
-  const { logType, notes } = req.body;
-  
-  if (!logType) {
-    res.status(400);
-    throw new Error('Log type is required');
-  }
-  
-  const careLog = await CareLog.create({
-    plant: req.params.id,
-    logType,
-    notes
-  });
-  
-  // If this is a watering event, update the plant's last watered date
-  if (logType === 'watering') {
-    plant.lastWatered = new Date();
-    await plant.save();
-  }
-  
-  res.status(201).json(careLog);
-});
-
-// @desc    Get all care logs for a plant
-// @route   GET /api/plants/:id/care-logs
-// @access  Private
-const getCareLogs = asyncHandler(async (req, res) => {
-  const plant = await Plant.findById(req.params.id);
-  
-  if (!plant) {
-    res.status(404);
-    throw new Error('Plant not found');
-  }
-  
-  // Check if the plant belongs to the user
-  if (plant.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error('Not authorized');
-  }
-  
-  const careLogs = await CareLog.find({ plant: req.params.id }).sort({ timestamp: -1 });
-  res.json(careLogs);
 });
 
 module.exports = {
   getPlants,
   getPlantById,
   createPlant,
-  updatePlant,
   deletePlant,
-  logCareActivity,
-  getCareLogs
+  // updatePlant,
+  // logCareActivity,
+  // getCareLogs
 };

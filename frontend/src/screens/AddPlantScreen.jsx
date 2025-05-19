@@ -1,48 +1,19 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PlantContext } from '../contexts/PlantContext';
-import AppHeader from '../components/layout/AppHeader';
-import Button from '../components/common/Button';
-import PlantForm from '../components/plant/PlantForm';
+import React from 'react';
+import PlantForm from '../components/PlantForm';
+import { Link } from 'react-router-dom';
 
-const AddPlantScreen = () => {
-  const [loading, setLoading] = useState(false);
-  const { createPlant } = useContext(PlantContext);
-  const navigate = useNavigate();
-
-  const handleSubmit = async (plantData) => {
-    try {
-      setLoading(true);
-      const newPlant = await createPlant(plantData);
-      navigate(`/plant/${newPlant.id}`);
-    } catch (error) {
-      console.error('Error adding plant:', error);
-      alert('Failed to add plant. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancel = () => {
-    navigate('/');
-  };
-
+function AddPlantScreen() {
   return (
     <div className="add-plant-screen">
-      <AppHeader 
-        title="Add New Plant" 
-        leftButton={{ icon: 'arrow-left', onClick: handleCancel }}
-      />
-      
-      <div className="content">
-        <PlantForm 
-          onSubmit={handleSubmit} 
-          loading={loading}
-          submitButtonText="Add Plant"
-        />
-      </div>
+      <header className="screen-header">
+        <h1>Add New Plant</h1>
+        <Link to="/" className="back-link">Back to Plants</Link>
+      </header>
+      <main>
+        <PlantForm />
+      </main>
     </div>
   );
-};
+}
 
 export default AddPlantScreen;

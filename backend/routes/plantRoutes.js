@@ -29,10 +29,21 @@
 
 const express = require('express');
 const router = express.Router();
+const { 
+  getPlants,
+  getPlantById,
+  createPlant,
+  deletePlant,
+} = require('../controllers/plantController');
+const { protect } = require('../middleware/auth'); // If you have auth middleware
 
-// Simple test route
-router.get('/', (req, res) => {
-  res.json([]);
-});
+// Routes
+router.route('/')
+  .get(getPlants)
+  .post(createPlant); // or protect(createPlant) if auth is required
+
+router.route('/:id')
+  .get(getPlantById)
+  .delete(deletePlant);
 
 module.exports = router;

@@ -47,7 +47,7 @@ const HomeScreen = () => {
     //   <AppFooter activePage="plants" />
     // </div>
     <div className="home-screen">
-      <header>
+      <header className="app-header">
         <h1>My Plants</h1>
       </header>
       <main>
