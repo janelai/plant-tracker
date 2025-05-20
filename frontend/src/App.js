@@ -1,3 +1,8 @@
+// App.js focuses on the application structure
+
+// Routing
+// Layout
+// Application-specific providers
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { PlantProvider } from './contexts/PlantContext';

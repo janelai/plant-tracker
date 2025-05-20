@@ -2,7 +2,7 @@
 Plant Tracker
 
 ## How to Run the Project:
-1.  Start MongoDB
+1.  net start MongoDB in cmd as admin
 2.  cd backend
     npm run dev
     The server should start on port 5000.
