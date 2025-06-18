@@ -9,12 +9,13 @@ import PlantList from '../components/PlantList';
 import { useTranslation } from 'react-i18next';
 
 const HomeScreen = () => {
-  const t = useTranslation();
+  // const t = useTranslation();
+  // TODO: implement translations
 
   return (
     <div className="home-screen">
       <header className="app-header">
-        <h1>{t('HOMESCREEN-MY_PLANTS')}</h1>
+        <h1>Plant Tracker App</h1>
       </header>
       <main>
         <PlantList />
